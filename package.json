@@ -1,6 +1,6 @@
 {
   "name": "@satsang-infotech/jwt-issuar",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Static file server for NodeJs applications",
   "files": [
     "/lib/**/*"
@@ -9,7 +9,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint",
@@ -23,12 +23,10 @@
     "url": "git+https://github.com/satsang-infotech/jwt-issuar.git"
   },
   "keywords": [
-    "static",
-    "server",
+    "jwt",
+    "authentication",
     "nodejs",
-    "static",
-    "file",
-    "server"
+    "stateless"
   ],
   "author": "Fenil Jariwala",
   "license": "ISC",
