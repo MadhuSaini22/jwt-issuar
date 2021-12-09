@@ -1,26 +1,28 @@
 import * as jwt from 'jsonwebtoken'
 import { v4 as uuid } from 'uuid'
 
-type AlgorithmTypes =
-  | 'HS256'
-  | 'HS384'
-  | 'HS512'
-  | 'RS256'
-  | 'RS384'
-  | 'RS512'
-  | 'PS256'
-  | 'PS384'
-  | 'PS512'
-  | 'ES256'
-  | 'ES384'
-  | 'ES512'
+// type AlgorithmTypes =
+//   | 'HS256'
+//   | 'HS384'
+//   | 'HS512'
+//   | 'RS256'
+//   | 'RS384'
+//   | 'RS512'
+//   | 'PS256'
+//   | 'PS384'
+//   | 'PS512'
+//   | 'ES256'
+//   | 'ES384'
+//   | 'ES512'
+
+type AlgorithmTypes = 'HS256' | 'HS384' | 'HS512'
+
+type AccessTokenExpiryTimeType = '10m' | '15m' | '30m' | '1h' | '2h' | '4h' | '8h'
+type RefreshTokenExpiryTimeType = '12h' | '1d' | '2d' | '5d' | '7d'
 
 class JwtUsingSecret {
   // secret
   private secret: string
-
-  // jwt type
-  private typ: string = 'JWT'
 
   // algorithm
   private alg: AlgorithmTypes = 'HS512'
@@ -34,35 +36,35 @@ class JwtUsingSecret {
   // JWT id
   private jti: string = uuid()
 
-  // expiry time
-  private exp: string = '1h'
-
-  // refresh token expiry time
-  private refExp: string = '24h'
+  // expiry default time
+  private accessTokenExpTime: AccessTokenExpiryTimeType = '1h'
+  private refreshTokenExpTime: RefreshTokenExpiryTimeType = '1d'
 
   /**
    *
    * @param secret secret key
    * @param issuer issuer domain name
    * @param audience target audience domain name
-   * @param expiryTime expiry time of jwt tokens DEFAULT 1 hour
    * @param algorithm algorithm for jwt DEFAULT RS512
+   * @param accessTokenExpTime expiry time of jwt tokens DEFAULT 1 hour
    * @param refreshTokenExpTime expiry time of refresh token DEFAULT 24 hours
    */
   constructor(
     secret: string,
     issuer: string,
     audience: string,
-    expiryTime?: string,
     algorithm?: AlgorithmTypes,
-    refreshTokenExpTime?: string
+    accessTokenExpTime?: AccessTokenExpiryTimeType,
+    refreshTokenExpTime?: RefreshTokenExpiryTimeType
   ) {
     this.secret = secret
     this.iss = issuer
     this.aud = audience
-    this.exp = expiryTime ? expiryTime : this.exp
-    this.alg = algorithm ? algorithm : this.alg
-    this.refExp = refreshTokenExpTime ? refreshTokenExpTime : this.refExp
+
+    // assigning optional fields
+    if (algorithm) this.alg = algorithm
+    if (accessTokenExpTime) this.accessTokenExpTime = accessTokenExpTime
+    if (refreshTokenExpTime) this.refreshTokenExpTime = refreshTokenExpTime
   }
 
   /**
@@ -84,7 +86,7 @@ class JwtUsingSecret {
       accToken = jwt.sign(payload, this.secret.toString(), {
         algorithm: this.alg,
         audience: this.aud,
-        expiresIn: this.exp,
+        expiresIn: this.accessTokenExpTime,
         issuer: this.iss,
         jwtid: this.jti,
         subject: subjectId.toString(),
@@ -102,7 +104,7 @@ class JwtUsingSecret {
         refToken = jwt.sign(payload, this.secret.toString(), {
           algorithm: this.alg,
           audience: this.aud,
-          expiresIn: this.refExp,
+          expiresIn: this.refreshTokenExpTime,
           issuer: this.iss,
           jwtid: this.jti,
           subject: subjectId.toString(),
@@ -112,38 +114,29 @@ class JwtUsingSecret {
         return Promise.reject(error.message)
       }
 
-      return Promise.resolve({ accessToken: accToken, refreshToken: refToken })
+      return Promise.resolve({ accessToken: accToken, refreshToken: refToken, jwtId: this.jti })
     } else {
-      return Promise.resolve({ accessToken: accToken })
+      return Promise.resolve({ accessToken: accToken, jwtId: this.jti })
     }
   }
 
   /**
    * verifies the given token
    * @param token token to be validated
+   * @returns Promise
    */
   public async verifyToken(token: string) {
-    let decodedToken: any
-    jwt.verify(
-      token,
-      this.secret,
-      {
+    try {
+      const decodedToken = jwt.verify(token, this.secret, {
         algorithms: [this.alg],
         audience: this.aud,
         issuer: this.iss,
-      },
-      (error, decoded) => {
-        if (error) return Promise.reject(error.message)
-
-        if (!token) {
-          return Promise.reject('Error in token decoding')
-        }
-
-        decodedToken = decoded
-      }
-    )
-
-    return Promise.resolve(decodedToken)
+      })
+      return Promise.resolve(decodedToken)
+    } catch (error: any) {
+      console.error(error)
+      Promise.reject(error.message)
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@satsang-infotech/jwt-issuar",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Static file server for NodeJs applications",
   "files": [
     "/lib/**/*"
@@ -8,8 +8,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "tsc && yarn format",
+    "format": "prettier --write \"src/**/*.ts\" && prettier --write \"lib/**/*.ts\" \"lib/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint",
