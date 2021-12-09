@@ -1,6 +1,6 @@
 {
-  "name": "@satsang-infotech/jwt-issuar",
-  "version": "0.1.0",
+  "name": "@satsanginfotech/jwt-issuar",
+  "version": "1.0.1",
   "description": "Static file server for NodeJs applications",
   "files": [
     "/lib/**/*"
@@ -16,7 +16,8 @@
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
-    "test": "node test.js"
+    "test": "node test.js",
+    "publish": "npm publish --access=public"
   },
   "repository": {
     "type": "git",

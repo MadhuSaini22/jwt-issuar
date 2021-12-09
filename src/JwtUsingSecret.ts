@@ -109,12 +109,11 @@ class JwtUsingSecret {
           jwtid: this.jti,
           subject: subjectId.toString(),
         })
+        return Promise.resolve({ accessToken: accToken, refreshToken: refToken, jwtId: this.jti })
       } catch (error: any) {
         console.log(error)
         return Promise.reject(error.message)
       }
-
-      return Promise.resolve({ accessToken: accToken, refreshToken: refToken, jwtId: this.jti })
     } else {
       return Promise.resolve({ accessToken: accToken, jwtId: this.jti })
     }
