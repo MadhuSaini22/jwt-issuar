@@ -1,6 +1,6 @@
 {
   "name": "@satsanginfotech/jwt-issuar",
-  "version": "1.0.21",
+  "version": "1.0.3",
   "description": "Static file server for NodeJs applications",
   "files": [
     "/lib/**/*"
